@@ -1,67 +1,29 @@
 package main
 
 import (
-	"bytes"
-	"io"
+	"bufio"
+	"flag"
+	"fmt"
+	"math/rand"
 	"os"
-	"strings"
-
-	"github.com/moshee/go-4chan-api/api"
-	"golang.org/x/net/html"
+	"time"
 )
 
 func main() {
-	var board = "pol"
-	var buffer bytes.Buffer
-	allThreadIdsPerBoard, err := api.GetThreads(board)
+	//scrapp("pol")
+	//scrapp("b")
+	//scrapp("biz")
+	// Register command-line flags.
+	numWords := flag.Int("words", 52, "maximum number of words to print")
+	prefixLen := flag.Int("prefix", 2, "prefix length in words")
+
+	flag.Parse()                     // Parse command-line flags.
+	rand.Seed(time.Now().UnixNano()) // Seed the random number generator.
+
+	c := NewChain(*prefixLen) // Initialize a new Chain.
+	file, err := os.Open("./data/b.txt")
 	check(err)
-	for _, allThreadIdsPerPage := range allThreadIdsPerBoard[0:4] {
-		for _, threadID := range allThreadIdsPerPage {
-
-			thread, err := api.GetThread(board, threadID)
-			check(err)
-			for _, post := range thread.Posts {
-				//fmt.Println(parser(post.Comment))
-				buffer.WriteString(parser(post.Comment))
-				buffer.WriteString("\n")
-			}
-
-		}
-	}
-
-	e := WriteStringToFile("./data/"+board+".txt", buffer.String())
-	check(e)
-	//fmt.Println(buffer.String())
-
-}
-
-func parser(raw string) string {
-	var s string
-	domDocTest := html.NewTokenizer(strings.NewReader(raw))
-	for tokenType := domDocTest.Next(); tokenType != html.ErrorToken; {
-		TxtContent := strings.TrimSpace(html.UnescapeString(string(domDocTest.Text())))
-		if len(TxtContent) > 5 && TxtContent[:2] != ">>" {
-			s = TxtContent
-		}
-		tokenType = domDocTest.Next()
-	}
-	return s
-
-}
-
-//WriteStringToFile dsdsdsd
-func WriteStringToFile(filepath, s string) error {
-	fo, err := os.Create(filepath)
-	check(err)
-	defer fo.Close()
-
-	_, err = io.Copy(fo, strings.NewReader(s))
-	check(err)
-	return nil
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
+	c.Build(bufio.NewReader(file)) // Build chains from standard input.
+	text := c.Generate(*numWords)  // Generate text.
+	fmt.Println(text)
 }

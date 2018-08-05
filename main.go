@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"flag"
-	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"time"
@@ -12,19 +11,23 @@ import (
 func main() {
 	//scrapp("pol")
 	//scrapp("fit")
-	//scrapp("b")
+	scrapp("b")
 	//scrapp("biz")
-	// Register command-line flags.
-	numWords := flag.Int("words", 100, "maximum number of words to print")
-	prefixLen := flag.Int("prefix", 2, "prefix length in words")
 
-	flag.Parse()                     // Parse command-line flags.
-	rand.Seed(time.Now().UnixNano()) // Seed the random number generator.
+	log.SetFlags(0)
+	log.SetPrefix("markov: ")
+	input := flag.String("in", "./data/b.txt", "input file")
+	n := flag.Int("n", 2, "number of words to use as prefix")
+	wordsPerRun := flag.Int("words", 100, "number of words per run")
+	startOnCapital := flag.Bool("capital", true, "start output with a capitalized prefix")
+	stopAtSentence := flag.Bool("sentence", false, "end output at a sentence ending punctuation mark (after n words)")
+	flag.Parse()
 
-	c := NewChain(*prefixLen) // Initialize a new Chain.
-	file, err := os.Open("./data/fit.txt")
+	rand.Seed(time.Now().UnixNano())
+
+	m, err := NewMarkovFromFile(*input, *n)
 	check(err)
-	c.Build(bufio.NewReader(file)) // Build chains from standard input.
-	text := c.Generate(*numWords)  // Generate text.
-	fmt.Println(text)
+
+	err = m.Output(os.Stdout, *wordsPerRun, *startOnCapital, *stopAtSentence)
+	check(err)
 }

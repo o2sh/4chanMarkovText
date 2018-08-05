@@ -16,10 +16,10 @@ func main() {
 
 	log.SetFlags(0)
 	log.SetPrefix("markov: ")
-	input := flag.String("in", "./data/b.txt", "input file")
+	input := flag.String("in", "./data/biz.txt", "input file")
 	n := flag.Int("n", 2, "number of words to use as prefix")
-	wordsPerRun := flag.Int("words", 100, "number of words per run")
-	startOnCapital := flag.Bool("capital", true, "start output with a capitalized prefix")
+	wordsPerRun := flag.Int("words", 200, "number of words per run")
+	startOnCapital := flag.Bool("capital", false, "start output with a capitalized prefix")
 	stopAtSentence := flag.Bool("sentence", false, "end output at a sentence ending punctuation mark (after n words)")
 	flag.Parse()
 

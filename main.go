@@ -11,7 +11,7 @@ import (
 func main() {
 	//scrapp("pol")
 	//scrapp("fit")
-	scrapp("b")
+	//scrapp("b")
 	//scrapp("biz")
 
 	log.SetFlags(0)

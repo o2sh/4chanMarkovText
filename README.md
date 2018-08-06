@@ -10,7 +10,7 @@ go run *go -n=3 -words=12 -capital -sentence -input="./data/fit.txt"
 ```
 
   -capital  
-        start output with a capitalized prefix  
+				start output with a capitalized prefix  
   -in string  
         input file (default "./data/biz.txt")  
   -n int  
